@@ -44,6 +44,7 @@ $_['tab_module']           = 'Module';
 $_['tab_custom_css']       = 'Custom CSS';
 $_['tab_custom_js']        = 'Custom Javascript';
 $_['tab_data']             = 'Data Storage';
+$_['tab_skin']             = 'Skin';
 
 // Entry
 $_['entry_header']         = 'Header';

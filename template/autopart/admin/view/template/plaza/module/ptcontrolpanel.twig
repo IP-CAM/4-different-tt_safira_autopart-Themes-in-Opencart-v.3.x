@@ -74,6 +74,7 @@
                             <div class="col-md-3 col-left">
                                 <ul class="nav nav-tabs menu-sections">
                                     <li class="active"><a href="#tab-general" data-toggle="tab"><i class="fa fa-tachometer" aria-hidden="true"></i>{{ tab_general }}</a></li>
+                                    <li><a href="#tab-skin" data-toggle="tab"><i class="fa fa-skin" aria-hidden="true"></i>{{ tab_skin }}</a></li>
                                     <li><a href="#tab-font" data-toggle="tab"><i class="fa fa-font" aria-hidden="true"></i>{{ tab_font }}</a></li>
                                     <li><a href="#tab-catalog" data-toggle="tab"><i class="fa fa-shopping-bag" aria-hidden="true"></i>{{ tab_catalog }}</a></li>
                                     <li><a href="#tab-product" data-toggle="tab"><i class="fa fa-cube" aria-hidden="true"></i>{{ tab_product }}</a></li>
@@ -149,6 +150,30 @@
                                                             <div class="col-sm-6">
                                                                 <a href="" id="thumb-image{{ store.store_id }}" data-toggle="image" class="img-thumbnail"><img src="{{ thumb[store.store_id] }}" alt="" title=""  /></a>
                                                                 <input type="hidden" id="input-image{{ store.store_id }}" name="module_ptcontrolpanel_loader_img[{{ store.store_id }}]" value="{{ module_ptcontrolpanel_loader_img[store.store_id] }}" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+
+                                            <div class="tab-pane" id="tab-skin">
+                                                {% for store in stores %}
+                                                    <div class="frm-field frm-field-{{ store.store_id }}">
+                                                        <div class="form-group" >
+                                                            <label class="col-sm-3 control-label" for="input-theme">{{ entry_theme_database }}</label>
+                                                            <div class="col-sm-9">
+                                                                <div class="row">
+                                                                    <div class="col-sm-6">
+                                                                        <select id="input-theme" class="form-control" name="file">
+                                                                            {% for key, value in database %}
+                                                                                <option value="{{ key }}">{{ value }}</option>
+                                                                            {% endfor %}
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="col-sm-6">
+                                                                        <button type="button" id="button-import" class="btn btn-primary btn-theme-option"><i class="fa fa-upload"></i> {{ button_import }}</button>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -718,24 +743,6 @@
                                             <div class="tab-pane" id="tab-advance">
                                                 {% for store in stores %}
                                                     <div class="frm-field frm-field-{{ store.store_id }}">
-                                                        <div class="form-group" >
-                                                            <label class="col-sm-3 control-label" for="input-theme">{{ entry_theme_database }}</label>
-                                                            <div class="col-sm-9">
-                                                                <div class="row">
-                                                                    <div class="col-sm-6">
-                                                                        <select id="input-theme" class="form-control" name="file">
-                                                                            {% for key, value in database %}
-                                                                                <option value="{{ key }}">{{ value }}</option>
-                                                                            {% endfor %}
-                                                                        </select>
-                                                                    </div>
-                                                                    <div class="col-sm-6">
-                                                                        <button type="button" id="button-import" class="btn btn-primary btn-theme-option"><i class="fa fa-upload"></i> {{ button_import }}</button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
                                                         <div class="form-group">
                                                             <label class="col-sm-3 control-label" for="input-theme">{{ entry_custom_css }}</label>
                                                             <div class="col-sm-9">
