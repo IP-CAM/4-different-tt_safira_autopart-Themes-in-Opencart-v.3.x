@@ -993,6 +993,8 @@
                     <tr>
                       <td class="text-left">{{ entry_additional_image }}</td>
                       <td class="text-right">{{ entry_sort_order }}</td>
+                      <td class="text-center">{{ entry_option }}</td>
+                      <td class="text-center">{{ entry_rotate }}</td>
                       <td></td>
                     </tr>
                   </thead>
@@ -1003,6 +1005,47 @@
                       <tr id="image-row{{ image_row }}">
                         <td class="text-left"><a href="" id="thumb-image{{ image_row }}" data-toggle="image" class="img-thumbnail"><img src="{{ product_image.thumb }}" alt="" title="" data-placeholder="{{ placeholder }}"/></a> <input type="hidden" name="product_image[{{ image_row }}][image]" value="{{ product_image.image }}" id="input-image{{ image_row }}"/></td>
                         <td class="text-right"><input type="text" name="product_image[{{ image_row }}][sort_order]" value="{{ product_image.sort_order }}" placeholder="{{ entry_sort_order }}" class="form-control"/></td>
+                        <!-- Swatches Options -->
+                        <td class="text-center">
+                          <select class="form-control image-opt" id="product-image-option-{{ image_row }}" data-row="{{ image_row }}" style="margin-bottom: 10px;">
+                            <option value="0">{{ text_choose_option }}</option>
+                            {% for product_option in product_options %}
+                              {% if product_option.type == "select" or product_option.type == "radio" %}
+                                <option value="{{ product_option.product_option_id }}">{{ product_option.name }}</option>
+                              {% endif %}
+                            {% endfor %}
+                          </select>
+                          {% for product_option in product_options %}
+                            {% if product_option.type == "select" or product_option.type == "radio" %}
+                              <select class="form-control image-opt-value" id="product-image-option-{{ image_row }}-{{ product_option.product_option_id }}" data-row="{{ image_row }}" data-type="{{ product_option.product_option_id }}">
+                                <option value="0">{{ text_choose_value }}</option>
+                                {% for po_value in product_option.product_option_value %}
+                                  {% if option_values[product_option.option_id] %}
+                                    {% for option_value in option_values[product_option.option_id] %}
+                                      {% if option_value.option_value_id == po_value.option_value_id %}
+                                        <option value="{{ po_value.product_option_value_id }}" {% if product_image.product_option_value_id == po_value.product_option_value_id %} selected="selected" {% endif %}>{{ option_value.name }}</option>
+                                      {% endif %}
+                                    {% endfor %}
+                                  {% endif %}
+                                {% endfor %}
+                              </select>
+                            {% endif %}
+                          {% endfor %}
+                        </td>
+
+                        <!-- Rotate Image -->
+                        <td class="text-center">
+                          <select name="product_image[{{ image_row }}][is_rotate]" class="form-control rotate-select">
+                            {% if product_image.is_rotate and (product_image.is_rotate == 1) %}
+                              <option value="1" selected="selected">Yes</option>
+                              <option value="0">No</option>
+                            {% else %}
+                              <option value="1">Yes</option>
+                              <option value="0" selected="selected">No</option>
+                            {% endif %}
+                          </select>
+                        </td>
+                        <!-- End -->
                         <td class="text-left"><button type="button" onclick="$('#image-row{{ image_row }}').remove();" data-toggle="tooltip" title="{{ button_remove }}" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button></td>
                       </tr>
                       {% set image_row = image_row + 1 %}
@@ -1563,14 +1606,97 @@
   <script type="text/javascript"><!--
   var image_row = {{ image_row }};
 
+    $('#tab-image tfoot td:first').attr('colspan', 4);
+
+    // Swatches Options
+    $('.image-opt-value').hide();
+    $('.image-opt-value').each(function () {
+      var row = $(this).data('row');
+      $(this).find('option').each(function () {
+        if($(this).attr("selected") == 'selected') {
+          var option_id = $(this).closest('.image-opt-value').data('type');
+          $('#product-image-option-' + row).find("option[value='" + option_id + "']").attr('selected', 'selected');
+          $(this).closest('.image-opt-value').attr('name', 'product_image[' + row + '][product_option_value_id]').show();
+        }
+      });
+    });
+
+    $('.image-opt').change(function () {
+      var row = $(this).data('row');
+      var id_select = $(this).attr('id');
+      var product_option_id = $(this).val();
+      $('#image-row' + row).find('.image-opt-value').removeAttr('name').hide();
+      $('#' + id_select + "-" + product_option_id).attr('name', 'product_image[' + row + '][product_option_value_id]').show();
+    });
+
+    $('.rotate-select').change(function() {
+      var value = $(this).val();
+      if(value == 1) {
+        $('.rotate-select').val(0);
+        $(this).val(1);
+      }
+    });
+
   function addImage() {
 	  html = '<tr id="image-row' + image_row + '">';
 	  html += '  <td class="text-left"><a href="" id="thumb-image' + image_row + '"data-toggle="image" class="img-thumbnail"><img src="{{ placeholder }}" alt="" title="" data-placeholder="{{ placeholder }}" /></a><input type="hidden" name="product_image[' + image_row + '][image]" value="" id="input-image' + image_row + '" /></td>';
 	  html += '  <td class="text-right"><input type="text" name="product_image[' + image_row + '][sort_order]" value="" placeholder="{{ entry_sort_order }}" class="form-control" /></td>';
+    // Swatches Options
+    html += '  <td class="text-center">';
+    html += '    <select class="form-control image-opt" id="product-image-option-' + image_row + '" data-row="' + image_row + '" style="margin-bottom: 10px;">';
+    html += '       <option value="0">{{ text_choose_option }}</option>';
+    {% for product_option in product_options %}
+    {% if product_option.type == "select" or product_option.type == "radio" %}
+    html += '       <option value="{{ product_option.product_option_id }}">{{ product_option.name }}</option>';
+    {% endif %}
+    {% endfor %}
+    html += '    </select>';
+    {% for product_option in product_options %}
+    {% if product_option.type == "select" or product_option.type == "radio" %}
+    html += '    <select class="form-control image-opt-value" id="product-image-option-' + image_row + '-{{ product_option.product_option_id }}" data-row="' + image_row + '" data-type="{{ product_option.product_option_id }}" style="display: none;">';
+    html += '       <option value="0">{{ text_choose_value }}</option>';
+    {% for po_value in product_option.product_option_value %}
+    {% if option_values[product_option.option_id] %}
+    {% for option_value in option_values[product_option.option_id] %}
+    {% if option_value.option_value_id == po_value.option_value_id %}
+    html += '       <option value="{{ po_value.product_option_value_id }}">{{ option_value.name }}</option>';
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+    {% endfor %}
+    html += '    </select>';
+    {% endif %}
+    {% endfor %}
+    html += '  </td>';
+
+    html += ' <td class="text-center">';
+    html += '   <select name="product_image[' + image_row + '][is_rotate]" class="form-control rotate-select">';
+    html += '     <option value="1">{{ text_yes }}</option>';
+    html += '     <option value="0" selected="selected">{{ text_no }}</option>';
+    html += '   </select>';
+    html += ' </td>';
 	  html += '  <td class="text-left"><button type="button" onclick="$(\'#image-row' + image_row + '\').remove();" data-toggle="tooltip" title="{{ button_remove }}" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button></td>';
 	  html += '</tr>';
 
 	  $('#images tbody').append(html);
+
+    // Swatches Options
+    $('.image-opt').change(function () {
+      var row = $(this).data('row');
+      var id_select = $(this).attr('id');
+      var product_option_id = $(this).val();
+      $('#image-row' + row).find('.image-opt-value').removeAttr('name').hide();
+      $('#' + id_select + "-" + product_option_id).attr('name', 'product_image[' + row + '][product_option_value_id]').show();
+    });
+
+    $('.rotate-select').change(function() {
+      var value = $(this).val();
+      if(value == 1) {
+        $('.rotate-select').val(0);
+        $(this).val(1);
+      }
+    });
+    //End
 
 	  image_row++;
   }
@@ -1628,4 +1754,4 @@
   $('#option a:first').tab('show');
   //--></script>
 </div>
-{{ footer }} 
+{{ footer }}

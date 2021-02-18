@@ -1,7 +1,13 @@
 <?php
 // Text
 $_['text_home']          = 'Home';
-$_['text_wishlist']      = 'Wish List (%s)';
+// Edit by Plazathemes
+$_['text_wishlist']      = '<span class="text-wishlist">Wish List</span> <span class="txt-count">%s</span>';
+$_['text_call_us']      = 'Call Us:';
+$_['text_store_locator']      = 'Store Locator';
+$_['text_header']      = 'Free Shipment From 100 Eur (EU) <a href="#">Learn More</a>';
+
+// End edit
 $_['text_shopping_cart'] = 'Shopping Cart';
 $_['text_category']      = 'Categories';
 $_['text_account']       = 'My Account';
